@@ -22,6 +22,7 @@ int main(){
     srand(time(0));
     std::string MyPassword = Generate_Password();
     std::cout << "My password: " << MyPassword << "\n";
+    std::cout << "Hey0";
     return 0;
 }
 
