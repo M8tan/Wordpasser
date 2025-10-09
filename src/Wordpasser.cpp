@@ -4,7 +4,10 @@
 #include <cstdlib>
 #include <cctype>
 #include <vector>
+#include <limits>
 #include "Wordpasser.h"
+#include "base64_rfc4648.hpp"
+using base64 = cppcodec::base64_rfc4648;
 
 char Convert_Char_To_Uppercase(char Input_Character);
 char Get_Random_Letter();
@@ -17,15 +20,69 @@ bool Contains_Number(std::string Input_String);
 bool Contains_Symbol(std::string Input_String);
 std::string Generate_Password();
 bool Analyze_Password(std::string Input_Password);
-std::string Encrypt_Password(std::string Input_Password);
+void Display_Menu();
+std::string Encrypt_Password(const std::string input, char key);
+std::string Decrypt_Password(const std::string encoded, char key);
+std::string xorEncrypt(const std::string input, char key);
+int ValidateIntType(const std::string prompt);
+
+
 int main(){
     srand(time(0));
-    std::string MyPassword = Generate_Password();
-    std::cout << "My password: " << MyPassword << "\n";
-    std::cout << "Hey0";
+    std::cout << "Hello! welcome to the wordpasser,\n A password generator, encryptor and decryptor :)";
+    Display_Menu();
+    bool Running = true;
+    int User_Choice;
+    while (Running){
+        User_Choice = ValidateIntType("Choose an operation: ");
+        
+        switch(User_Choice){
+            case 0:
+                Display_Menu();
+                break;
+            case 1:{
+                std::string New_Password = Generate_Password();
+                std::cout << "Done! your new password is " << New_Password << "\n";
+                break;}
+            case 2:{
+                std::string Original_Password;
+                std::string Encrypted_Password;
+                int Password_Shift;
+                std::cout << "Enter password: ";
+                std::cin >> Original_Password;
+                Password_Shift = ValidateIntType("Enter encryption shift {number}: ");
+                Encrypted_Password = Encrypt_Password(Original_Password, Password_Shift);
+                std::cout << "Done! your encrypted password is " << Encrypted_Password << "\n";
+                break;}
+            case 3:{
+                std::string Original_Password;
+                std::string Decrypted_Password;
+                int Password_Shift;
+                std::cout << "Enter password: ";
+                std::cin >> Original_Password;
+                Password_Shift = ValidateIntType("Enter encryption shift {number}: ");
+                Decrypted_Password = Decrypt_Password(Original_Password, Password_Shift);
+                std::cout << "Done! your decrypted password is " << Decrypted_Password << "\n";
+                break;}
+            case 4:
+                Running = false;
+                break;
+            default:
+                break;
+        }
+    }
+    
     return 0;
 }
 
+void Display_Menu(){
+    std::cout << "Optional operations:\n";
+    std::cout << "0. Dispaly this menu\n";
+    std::cout << "1. Generate a password\n";
+    std::cout << "2. Encrypt a password\n";
+    std::cout << "3. Decrypt a password\n";
+    std::cout << "4. Exit wordpasser\n";
+}
 char Convert_Char_To_Uppercase(char Input_Character){
     switch (Input_Character){
         case 'a':
@@ -331,10 +388,34 @@ bool Analyze_Password(std::string Input_Password){
     }
 
 }
-std::string Encrypt_Password(std::string Input_Password){
-    return "Yay";
+std::string xorEncrypt(const std::string input, char key) {
+    std::string output = input;
+    for (char& c : output) {
+        c ^= key;
+    }
+    return output;
 }
+std::string Encrypt_Password(const std::string input, char key) {
+    std::string encrypted = xorEncrypt(input, key);
+    return base64::encode(encrypted);
+}
+std::string Decrypt_Password(const std::string encoded, char key) {
+    std::vector<unsigned char> decoded_bytes = base64::decode(encoded);
+    std::string decoded(decoded_bytes.begin(), decoded_bytes.end());
+    return xorEncrypt(decoded, key);
+}
+int ValidateIntType(const std::string prompt) {
+    int value;
+    while (true) {
+        std::cout << prompt;
+        std::cin >> value;
+        if (!std::cin.fail()) return value;
 
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Invalid input {needs to be a number}\n";
+    }
+}
 std::string Generate_Password_BU(){
     std::string Password = "";
     for (int i = 1; i < 21; i++){
