@@ -29,7 +29,9 @@ int ValidateIntType(const std::string prompt);
 
 int main(){
     srand(time(0));
-    std::cout << "Hello! welcome to the wordpasser,\n A password generator, encryptor and decryptor :)";
+    std::cout << "Hello! welcome to the wordpasser,\nA password generator, encryptor and decryptor :)\n";
+    std::cout << "You can generate a password, take an existing password and encrypt it using a certain shift number,\nOr decrypt an existing password with a shift number.\n";
+    std::cout << "For example:\nGenerate a password, encrypt it using a 3 shift, and then u can take the output, decrypt it to shift 3 and get the original password.\n";
     Display_Menu();
     bool Running = true;
     int User_Choice;
